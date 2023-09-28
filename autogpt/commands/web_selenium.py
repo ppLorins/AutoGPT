@@ -113,7 +113,7 @@ def scrape_text_with_selenium(url: str, agent: Agent) -> tuple[WebDriver, str]:
 
     options: BrowserOptions = options_available[agent.config.selenium_web_browser]()
     options.add_argument(
-        "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.5615.49 Safari/537.36"
+        "user-agent=%s" % (agent.config.user_agent)
     )
 
     if agent.config.selenium_web_browser == "firefox":
@@ -141,7 +141,13 @@ def scrape_text_with_selenium(url: str, agent: Agent) -> tuple[WebDriver, str]:
             options.add_argument("--headless=new")
             options.add_argument("--disable-gpu")
 
-        chromium_driver_path = Path("/usr/bin/chromedriver")
+        if agent.config.chrome_proxy:
+            options.add_argument("--proxy-server=%s" % agent.config.chrome_proxy)
+
+        user_dir = agent.config.chrome_user_dir
+        options.add_argument("--user-data-dir=%s" % user_dir)
+
+        chromium_driver_path = Path(agent.config.chrome_driver)
 
         driver = ChromeDriver(
             service=ChromeDriverService(str(chromium_driver_path))

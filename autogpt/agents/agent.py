@@ -32,13 +32,13 @@ class Agent(BaseAgent):
     """Agent class for interacting with Auto-GPT."""
 
     def __init__(
-        self,
-        ai_config: AIConfig,
-        command_registry: CommandRegistry,
-        memory: VectorMemory,
-        triggering_prompt: str,
-        config: Config,
-        cycle_budget: Optional[int] = None,
+            self,
+            ai_config: AIConfig,
+            command_registry: CommandRegistry,
+            memory: VectorMemory,
+            triggering_prompt: str,
+            config: Config,
+            cycle_budget: Optional[int] = None,
     ):
         super().__init__(
             ai_config=ai_config,
@@ -73,7 +73,7 @@ class Agent(BaseAgent):
         api_manager = ApiManager()
         if api_manager.get_total_budget() > 0.0:
             remaining_budget = (
-                api_manager.get_total_budget() - api_manager.get_total_cost()
+                    api_manager.get_total_budget() - api_manager.get_total_cost()
             )
             if remaining_budget < 0:
                 remaining_budget = 0
@@ -120,10 +120,10 @@ class Agent(BaseAgent):
         return prompt
 
     def execute(
-        self,
-        command_name: str | None,
-        command_args: dict[str, str] | None,
-        user_input: str | None,
+            self,
+            command_name: str | None,
+            command_args: dict[str, str] | None,
+            user_input: str | None,
     ) -> str:
         # Execute command
         if command_name is not None and command_name.lower().startswith("error"):
@@ -171,7 +171,7 @@ class Agent(BaseAgent):
         return result
 
     def parse_and_process_response(
-        self, llm_response: ChatModelResponse, *args, **kwargs
+            self, llm_response: ChatModelResponse, *args, **kwargs
     ) -> tuple[CommandName | None, CommandArgs | None, AgentThoughts]:
         if not llm_response.content:
             raise SyntaxError("Assistant response has no text content")
@@ -188,7 +188,11 @@ class Agent(BaseAgent):
         for plugin in self.config.plugins:
             if not plugin.can_handle_post_planning():
                 continue
+            assistant_reply_dict['extra'] = {
+                'config': self.config
+            }
             assistant_reply_dict = plugin.post_planning(assistant_reply_dict)
+            del assistant_reply_dict['extra']
 
         response = None, None, assistant_reply_dict
 
@@ -214,7 +218,7 @@ class Agent(BaseAgent):
 
 
 def extract_command(
-    assistant_reply_json: dict, assistant_reply: ChatModelResponse, config: Config
+        assistant_reply_json: dict, assistant_reply: ChatModelResponse, config: Config
 ) -> tuple[str, dict[str, str]]:
     """Parse the response and return the command name and arguments
 
@@ -271,9 +275,9 @@ def extract_command(
 
 
 def execute_command(
-    command_name: str,
-    arguments: dict[str, str],
-    agent: Agent,
+        command_name: str,
+        arguments: dict[str, str],
+        agent: Agent,
 ) -> Any:
     """Execute the command and return the result
 
@@ -293,8 +297,8 @@ def execute_command(
         # Handle non-native commands (e.g. from plugins)
         for command in agent.ai_config.prompt_generator.commands:
             if (
-                command_name == command.label.lower()
-                or command_name == command.name.lower()
+                    command_name == command.label.lower()
+                    or command_name == command.name.lower()
             ):
                 return command.function(**arguments)
 

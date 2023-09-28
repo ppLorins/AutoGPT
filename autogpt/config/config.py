@@ -97,8 +97,13 @@ class Config(SystemSettings, arbitrary_types_allowed=True):
     huggingface_audio_to_text_model: Optional[str] = None
     # Web browsing
     selenium_web_browser: str = "chrome"
-    selenium_headless: bool = True
-    user_agent: str = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36"
+    selenium_headless: bool = False
+    chrome_driver: str = "/Users/arthur/ProgramFile/chromedriver_mac64/chromedriver"
+    chrome_proxy: str = "socks5://localhost:1080"
+    chrome_user_dir: str = "/Users/arthur/git/Auto-GPT/chrome_user_dir"
+    user_agent: str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36"
+    # api_target: str = '给我想个好点的分手理由'
+    api_budget: float = 0.1
 
     ###################
     # Plugin Settings #
@@ -144,7 +149,7 @@ class Config(SystemSettings, arbitrary_types_allowed=True):
             p.__class__, AutoGPTPluginTemplate
         ), f"{p} does not subclass AutoGPTPluginTemplate"
         assert (
-            p.__class__.__name__ != "AutoGPTPluginTemplate"
+                p.__class__.__name__ != "AutoGPTPluginTemplate"
         ), f"Plugins must subclass AutoGPTPluginTemplate; {p} is a template instance"
         return p
 
@@ -175,16 +180,16 @@ class Config(SystemSettings, arbitrary_types_allowed=True):
         fast_llm = (
             self.fast_llm
             if not (
-                self.fast_llm == self.smart_llm
-                and self.fast_llm.startswith(GPT_4_MODEL)
+                    self.fast_llm == self.smart_llm
+                    and self.fast_llm.startswith(GPT_4_MODEL)
             )
             else f"not_{self.fast_llm}"
         )
         smart_llm = (
             self.smart_llm
             if not (
-                self.smart_llm == self.fast_llm
-                and self.smart_llm.startswith(GPT_3_MODEL)
+                    self.smart_llm == self.fast_llm
+                    and self.smart_llm.startswith(GPT_3_MODEL)
             )
             else f"not_{self.smart_llm}"
         )
@@ -243,9 +248,9 @@ class ConfigBuilder(Configurable[Config]):
             "use_azure": os.getenv("USE_AZURE") == "True",
             "azure_config_file": os.getenv("AZURE_CONFIG_FILE", AZURE_CONFIG_FILE),
             "execute_local_commands": os.getenv("EXECUTE_LOCAL_COMMANDS", "False")
-            == "True",
+                                      == "True",
             "restrict_to_workspace": os.getenv("RESTRICT_TO_WORKSPACE", "True")
-            == "True",
+                                     == "True",
             "openai_functions": os.getenv("OPENAI_FUNCTIONS", "False") == "True",
             "elevenlabs_api_key": os.getenv("ELEVENLABS_API_KEY"),
             "streamelements_voice": os.getenv("STREAMELEMENTS_VOICE"),
@@ -264,6 +269,9 @@ class ConfigBuilder(Configurable[Config]):
             "sd_webui_auth": os.getenv("SD_WEBUI_AUTH"),
             "selenium_web_browser": os.getenv("USE_WEB_BROWSER"),
             "selenium_headless": os.getenv("HEADLESS_BROWSER", "True") == "True",
+            "chrome_driver": os.getenv("CHROME_DRIVER"),
+            "chrome_proxy": os.getenv("CHROME_PROXY"),
+            "chrome_user_dir": os.getenv("CHROME_USER_DIR"),
             "user_agent": os.getenv("USER_AGENT"),
             "memory_backend": os.getenv("MEMORY_BACKEND"),
             "memory_index": os.getenv("MEMORY_INDEX"),

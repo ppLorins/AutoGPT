@@ -133,7 +133,7 @@ def create_directory_if_not_exists(directory_path: str) -> bool:
 
 
 def initialize_openai_plugins(
-    manifests_specs: dict, config: Config, debug: bool = False
+        manifests_specs: dict, config: Config, debug: bool = False
 ) -> dict:
     """
     Initialize OpenAI plugins.
@@ -187,7 +187,7 @@ def initialize_openai_plugins(
 
 
 def instantiate_openai_plugin_clients(
-    manifests_specs_clients: dict, config: Config, debug: bool = False
+        manifests_specs_clients: dict, config: Config, debug: bool = False
 ) -> dict:
     """
     Instantiates BaseOpenAIPlugin instances for each OpenAI plugin.
@@ -232,8 +232,8 @@ def scan_plugins(config: Config, debug: bool = False) -> List[AutoGPTPluginTempl
 
         try:
             __import__(qualified_module_name)
-        except:
-            logger.error(f"Failed to load {qualified_module_name}")
+        except Exception as e:
+            logger.error(f"Failed to load {qualified_module_name}:%s" % e)
             continue
         plugin = sys.modules[qualified_module_name]
 
@@ -245,8 +245,8 @@ def scan_plugins(config: Config, debug: bool = False) -> List[AutoGPTPluginTempl
 
         for _, class_obj in inspect.getmembers(plugin):
             if (
-                hasattr(class_obj, "_abc_impl")
-                and AutoGPTPluginTemplate in class_obj.__bases__
+                    hasattr(class_obj, "_abc_impl")
+                    and AutoGPTPluginTemplate in class_obj.__bases__
             ):
                 loaded_plugins.append(class_obj())
 
@@ -272,8 +272,8 @@ def scan_plugins(config: Config, debug: bool = False) -> List[AutoGPTPluginTempl
                         continue
 
                     if (
-                        issubclass(a_module, AutoGPTPluginTemplate)
-                        and a_module.__name__ != "AutoGPTPluginTemplate"
+                            issubclass(a_module, AutoGPTPluginTemplate)
+                            and a_module.__name__ != "AutoGPTPluginTemplate"
                     ):
                         plugin_name = a_module.__name__
                         plugin_configured = plugins_config.get(plugin_name) is not None
@@ -295,7 +295,7 @@ def scan_plugins(config: Config, debug: bool = False) -> List[AutoGPTPluginTempl
                             )
                     else:
                         if (
-                            module_name := getattr(a_module, "__name__", str(a_module))
+                                module_name := getattr(a_module, "__name__", str(a_module))
                         ) != "AutoGPTPluginTemplate":
                             logger.debug(
                                 f"Skipping '{module_name}' because it doesn't subclass AutoGPTPluginTemplate."

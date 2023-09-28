@@ -17,8 +17,8 @@ import click
     "--ai-settings",
     "-C",
     help=(
-        "Specifies which ai_settings.yaml file to use, relative to the Auto-GPT"
-        " root directory. Will also automatically skip the re-prompt."
+            "Specifies which ai_settings.yaml file to use, relative to the Auto-GPT"
+            " root directory. Will also automatically skip the re-prompt."
     ),
 )
 @click.option(

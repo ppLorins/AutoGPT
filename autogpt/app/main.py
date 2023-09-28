@@ -35,25 +35,25 @@ from scripts.install_plugin_deps import install_plugin_dependencies
 
 
 def run_auto_gpt(
-    continuous: bool,
-    continuous_limit: int,
-    ai_settings: str,
-    prompt_settings: str,
-    skip_reprompt: bool,
-    speak: bool,
-    debug: bool,
-    gpt3only: bool,
-    gpt4only: bool,
-    memory_type: str,
-    browser_name: str,
-    allow_downloads: bool,
-    skip_news: bool,
-    working_directory: Path,
-    workspace_directory: str | Path,
-    install_plugin_deps: bool,
-    ai_name: Optional[str] = None,
-    ai_role: Optional[str] = None,
-    ai_goals: tuple[str] = tuple(),
+        continuous: bool,
+        continuous_limit: int,
+        ai_settings: str,
+        prompt_settings: str,
+        skip_reprompt: bool,
+        speak: bool,
+        debug: bool,
+        gpt3only: bool,
+        gpt4only: bool,
+        memory_type: str,
+        browser_name: str,
+        allow_downloads: bool,
+        skip_news: bool,
+        working_directory: Path,
+        workspace_directory: str | Path,
+        install_plugin_deps: bool,
+        ai_name: Optional[str] = None,
+        ai_role: Optional[str] = None,
+        ai_goals: tuple[str] = tuple(),
 ):
     # Configure logging before we do anything else.
     logger.set_level(logging.DEBUG if debug else logging.INFO)
@@ -195,7 +195,7 @@ class UserFeedback(str, enum.Enum):
 
 
 def run_interaction_loop(
-    agent: Agent,
+        agent: Agent,
 ) -> None:
     """Run the main interaction loop for the agent.
 
@@ -324,11 +324,11 @@ def run_interaction_loop(
 
 
 def update_user(
-    config: Config,
-    ai_config: AIConfig,
-    command_name: CommandName | None,
-    command_args: CommandArgs | None,
-    assistant_reply_dict: AgentThoughts,
+        config: Config,
+        ai_config: AIConfig,
+        command_name: CommandName | None,
+        command_args: CommandArgs | None,
+        assistant_reply_dict: AgentThoughts,
 ) -> None:
     """Prints the assistant's thoughts and the next command to the user.
 
@@ -371,8 +371,8 @@ def update_user(
 
 
 def get_user_feedback(
-    config: Config,
-    ai_config: AIConfig,
+        config: Config,
+        ai_config: AIConfig,
 ) -> tuple[UserFeedback, str, int | None]:
     """Gets the user's feedback on the assistant's reply.
 
@@ -432,10 +432,10 @@ def get_user_feedback(
 
 
 def construct_main_ai_config(
-    config: Config,
-    name: Optional[str] = None,
-    role: Optional[str] = None,
-    goals: tuple[str] = tuple(),
+        config: Config,
+        name: Optional[str] = None,
+        role: Optional[str] = None,
+        goals: tuple[str] = tuple(),
 ) -> AIConfig:
     """Construct the prompt for the AI to respond to
 
@@ -452,10 +452,12 @@ def construct_main_ai_config(
     if goals:
         ai_config.ai_goals = list(goals)
 
+    ai_config.api_budget = config.api_budget
+
     if (
-        all([name, role, goals])
-        or config.skip_reprompt
-        and all([ai_config.ai_name, ai_config.ai_role, ai_config.ai_goals])
+            all([name, role, goals])
+            or config.skip_reprompt
+            and all([ai_config.ai_name, ai_config.ai_role, ai_config.ai_goals])
     ):
         logger.typewriter_log("Name :", Fore.GREEN, ai_config.ai_name)
         logger.typewriter_log("Role :", Fore.GREEN, ai_config.ai_role)
@@ -472,21 +474,22 @@ def construct_main_ai_config(
             f"Would you like me to return to being {ai_config.ai_name}?",
             speak_text=True,
         )
-        should_continue = clean_input(
-            config,
-            f"""Continue with the last settings?
-Name:  {ai_config.ai_name}
-Role:  {ai_config.ai_role}
-Goals: {ai_config.ai_goals}
-API Budget: {"infinite" if ai_config.api_budget <= 0 else f"${ai_config.api_budget}"}
-Continue ({config.authorise_key}/{config.exit_key}): """,
-        )
+        #         should_continue = clean_input(
+        #             config,
+        #             f"""Continue with the last settings?
+        # Name:  {ai_config.ai_name}
+        # Role:  {ai_config.ai_role}
+        # Goals: {ai_config.ai_goals}
+        # API Budget: {"infinite" if ai_config.api_budget <= 0 else f"${ai_config.api_budget}"}
+        # Continue ({config.authorise_key}/{config.exit_key}): """,
+        #         )
+        should_continue = 'n'
         if should_continue.lower() == config.exit_key:
-            ai_config = AIConfig()
+            ai_config = AIConfig(ai_goals=ai_config.ai_goals, api_budget=ai_config.api_budget)
 
     if any([not ai_config.ai_name, not ai_config.ai_role, not ai_config.ai_goals]):
-        ai_config = prompt_user(config)
-        ai_config.save(config.workdir / config.ai_settings_file)
+        ai_config = prompt_user(config, user_desire=ai_config.ai_goals[0])
+        # ai_config.save(config.workdir / config.ai_settings_file)
 
     if config.restrict_to_workspace:
         logger.typewriter_log(
@@ -520,9 +523,9 @@ Continue ({config.authorise_key}/{config.exit_key}): """,
 
 
 def print_assistant_thoughts(
-    ai_name: str,
-    assistant_reply_json_valid: dict,
-    config: Config,
+        ai_name: str,
+        assistant_reply_json_valid: dict,
+        config: Config,
 ) -> None:
     from autogpt.speech import say_text
 

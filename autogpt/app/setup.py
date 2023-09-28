@@ -19,7 +19,8 @@ from autogpt.prompts.default_prompts import (
 
 
 def prompt_user(
-    config: Config, ai_config_template: Optional[AIConfig] = None
+        config: Config, ai_config_template: Optional[AIConfig] = None,
+        user_desire: Optional[str] = '',
 ) -> AIConfig:
     """Prompt the user for input
 
@@ -47,7 +48,7 @@ def prompt_user(
         ]
     )
 
-    user_desire = ""
+    # user_desire = ""
     if not ai_config_template_provided:
         # Get user desire if command line overrides have not been passed in
         logger.typewriter_log(
@@ -57,9 +58,10 @@ def prompt_user(
             speak_text=True,
         )
 
-        user_desire = utils.clean_input(
-            config, f"{Fore.LIGHTBLUE_EX}I want Auto-GPT to{Style.RESET_ALL}: "
-        )
+        # user_desire = utils.clean_input(
+        #     config, f"{Fore.LIGHTBLUE_EX}I want Auto-GPT to{Style.RESET_ALL}: "
+        # )
+        # user_desire = config.api_target
 
     if user_desire.strip() == "":
         user_desire = DEFAULT_USER_DESIRE_PROMPT  # Default prompt
@@ -89,7 +91,7 @@ def prompt_user(
 
 
 def generate_aiconfig_manual(
-    config: Config, ai_config_template: Optional[AIConfig] = None
+        config: Config, ai_config_template: Optional[AIConfig] = None
 ) -> AIConfig:
     """
     Interactively create an AI configuration by prompting the user to provide the name, role, and goals of the AI.
@@ -160,7 +162,7 @@ def generate_aiconfig_manual(
         ai_goals = []
         for i in range(5):
             ai_goal = utils.clean_input(
-                config, f"{Fore.LIGHTBLUE_EX}Goal{Style.RESET_ALL} {i+1}: "
+                config, f"{Fore.LIGHTBLUE_EX}Goal{Style.RESET_ALL} {i + 1}: "
             )
             if ai_goal == "":
                 break
@@ -234,6 +236,6 @@ def generate_aiconfig_automatic(user_prompt: str, config: Config) -> AIConfig:
         .strip()
     )
     ai_goals = re.findall(r"(?<=\n)-\s*(.*)", output)
-    api_budget = 0.0  # TODO: parse api budget using a regular expression
+    api_budget = config.api_budget  # TODO: parse api budget using a regular expression
 
     return AIConfig(ai_name, ai_role, ai_goals, api_budget)
