@@ -103,7 +103,7 @@ class Config(SystemSettings, arbitrary_types_allowed=True):
     chrome_user_dir: str = "/Users/arthur/git/Auto-GPT/chrome_user_dir"
     user_agent: str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36"
     # api_target: str = '给我想个好点的分手理由'
-    api_budget: float = 0.1
+    api_budget: float = 0.0
 
     ###################
     # Plugin Settings #
